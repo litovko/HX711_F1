@@ -158,7 +158,7 @@ int main(void)
     HAL_GPIO_WritePin(HX711_CLOCK_GPIO_Port, HX711_CLOCK_Pin, GPIO_PIN_RESET);
 */
     //buffer = buffer ^ 0x800000;
-    sprintf((char*)dataToSend, "\n\r%05d  %05d \n\r",buffer, count);
+    sprintf((char*)dataToSend, "%05d  %05d \n\r",buffer, count);
     weight=buffer;
     l=strlen((char*)dataToSend);
     CDC_Transmit_FS(dataToSend, l);
@@ -238,7 +238,7 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 31999;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 100;
+  htim3.Init.Period = 18000;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
   {
