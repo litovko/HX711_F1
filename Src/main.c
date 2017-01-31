@@ -158,7 +158,7 @@ int main(void)
     HAL_GPIO_WritePin(HX711_CLOCK_GPIO_Port, HX711_CLOCK_Pin, GPIO_PIN_RESET);
 */
     //buffer = buffer ^ 0x800000;
-    sprintf((char*)dataToSend, "\n\r%05d  %05d \n\r",buffer, count);
+    sprintf((char*)dataToSend, "%05d \n\r",buffer);
     weight=buffer;
     l=strlen((char*)dataToSend);
     CDC_Transmit_FS(dataToSend, l);
