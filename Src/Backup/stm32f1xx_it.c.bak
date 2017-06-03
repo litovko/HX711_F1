@@ -213,14 +213,16 @@ void TIM3_IRQHandler(void)
   HAL_TIM_IRQHandler(&htim3);
   /* USER CODE BEGIN TIM3_IRQn 1 */
 // напюанрвхй опепшбюмхи нр рюилепю
-  if (count<18000000);{
+  /*if (count<=1800){
     uint8_t buf[16];
     uint8_t l; 
-    sprintf((char*)buf, "r%05d %05d",count,weight);
+    int timerValue = __HAL_TIM_GET_COUNTER(&htim3);
+    sprintf((char*)buf, "d%05d:%05d:%05d",count,weight,timerValue);
+    //sprintf((char*)buf, "d%05d:%05d",count,weight);
     l=strlen((char*)buf);
     CDC_Transmit_FS(buf, l);
     count++;
-  }
+  }*/
   /* USER CODE END TIM3_IRQn 1 */
 }
 

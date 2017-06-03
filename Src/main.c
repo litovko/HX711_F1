@@ -158,9 +158,11 @@ int main(void)
     HAL_GPIO_WritePin(HX711_CLOCK_GPIO_Port, HX711_CLOCK_Pin, GPIO_PIN_RESET);
 */
     //buffer = buffer ^ 0x800000;
-    sprintf((char*)dataToSend, "%05d \n\r",buffer);
+    int timerValue = __HAL_TIM_GET_COUNTER(&htim3);
+    sprintf((char*)dataToSend, "%05d %05d \n\r",buffer,timerValue);
     weight=buffer;
     l=strlen((char*)dataToSend);
+    
     CDC_Transmit_FS(dataToSend, l);
     HAL_Delay(5);
   /* USER CODE END WHILE */
@@ -232,21 +234,24 @@ void SystemClock_Config(void)
 static void MX_TIM3_Init(void)
 {
 
-  TIM_ClockConfigTypeDef sClockSourceConfig;
+  TIM_Encoder_InitTypeDef sConfig;
   TIM_MasterConfigTypeDef sMasterConfig;
 
   htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 31999;
+  htim3.Init.Prescaler = 0;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 100;
+  htim3.Init.Period = 65535;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-  if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
+  sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
+  sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
+  sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
+  sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
+  sConfig.IC1Filter = 0;
+  sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
+  sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
+  sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
+  sConfig.IC2Filter = 0;
+  if (HAL_TIM_Encoder_Init(&htim3, &sConfig) != HAL_OK)
   {
     Error_Handler();
   }
@@ -266,6 +271,8 @@ static void MX_TIM3_Init(void)
         * Output
         * EVENT_OUT
         * EXTI
+     PA0-WKUP   ------> S_TIM2_CH1_ETR
+     PA1   ------> S_TIM2_CH2
 */
 static void MX_GPIO_Init(void)
 {
@@ -279,6 +286,12 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, GPIO_MOTOR_Pin|GPIO_BLINK_Pin|HX711_CLOCK_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : PA0 PA1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : GPIO_MOTOR_Pin GPIO_BLINK_Pin HX711_CLOCK_Pin */
   GPIO_InitStruct.Pin = GPIO_MOTOR_Pin|GPIO_BLINK_Pin|HX711_CLOCK_Pin;
